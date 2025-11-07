@@ -48,11 +48,6 @@ export default function FileForm({ onSubmit }: FileFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!text.trim()) {
-      setError("Vui lòng nhập nội dung")
-      return
-    }
-
     if (!file) {
       setError("Vui lòng chọn file")
       return
@@ -75,7 +70,7 @@ export default function FileForm({ onSubmit }: FileFormProps) {
     <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6">
       <h3 className="text-lg font-semibold text-slate-900">Gửi File</h3>
 
-      <div className="space-y-2">
+      {/* <div className="space-y-2">
         <label htmlFor="text" className="block text-sm font-medium text-slate-700">
           Mô tả
         </label>
@@ -88,7 +83,7 @@ export default function FileForm({ onSubmit }: FileFormProps) {
           rows={4}
           disabled={loading}
         />
-      </div>
+      </div> */}
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-slate-700">Chọn file</label>

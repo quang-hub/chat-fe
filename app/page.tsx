@@ -88,11 +88,10 @@ export default function Home() {
     }
   }
 
-  const handleFileSubmit = async (file: File, description?: string) => {
+  const handleFileSubmit = async (file: File) => {
     try {
       const form = new FormData()
       form.append("file", file)
-      if (description) form.append("description", description)
 
       await fetch(`${apiBase}${fileEndpoint}`, {
         method: "POST",
