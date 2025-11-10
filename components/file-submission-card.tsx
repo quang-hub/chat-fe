@@ -45,10 +45,10 @@ export default function FileSubmissionCard({ submission, onDelete }: FileSubmiss
   }
 
   const handleDownload = () => {
-    const link = document.createElement("a")
-    link.href = "#" // In a real app, this would be the file URL
-    link.download = submission.fileName
-    link.click()
+    const fileUrl = process.env.NEXT_PUBLIC_API_BASE_URL + submission.text;
+    // console.log(fileUrl);
+    
+    window.open(fileUrl, "_blank");
   }
 
   return (
@@ -60,11 +60,9 @@ export default function FileSubmissionCard({ submission, onDelete }: FileSubmiss
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <h4 className="text-sm font-medium text-slate-900 truncate mb-1">{submission.text}</h4>
-        <p className="text-xs text-slate-500 mb-2 line-clamp-1">{submission.fileName}</p>
+        <h4 className="text-sm font-medium text-slate-900 truncate mb-1">{submission.fileName}</h4>
+        {/* <p className="text-xs text-slate-500 mb-2 line-clamp-1">{submission.}</p> */}
         <div className="flex items-center gap-3 text-xs text-slate-500">
-          <span>{submission.fileSize} MB</span>
-          <span>•</span>
           <span>{submission.uploadedAt}</span>
         </div>
       </div>

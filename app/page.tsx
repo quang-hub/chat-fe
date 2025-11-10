@@ -88,19 +88,24 @@ export default function Home() {
     }
   }
 
-  const handleFileSubmit = async (file: File) => {
+  const handleFileSubmit = async (selectedFiles: File[]) => {
     try {
-      const form = new FormData()
-      form.append("file", file)
+      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || ""
+      const endpoint = process.env.NEXT_PUBLIC_FILE_API_ENDPOINT || "/api/file"
 
-      await fetch(`${apiBase}${fileEndpoint}`, {
-        method: "POST",
-        body: form,
-        cache: "no-store",
-      })
-      // KHÔNG setMessages ở đây; đợi WS
-    } catch (e) {
-      console.error("Submit file failed:", e)
+      for (const file of selectedFiles) {
+        const formData = new FormData()
+        formData.append("file", file)
+
+        const response = await fetch(`${apiBase}${endpoint}`, {
+          method: "POST",
+          body: formData,
+        })
+        const data = await response.json()
+        // setMessages((prev) => [data, ...prev])
+      }
+    } catch (error) {
+      console.error("Failed to submit file:", error)
     }
   }
 
