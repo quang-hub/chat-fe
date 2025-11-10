@@ -45,11 +45,15 @@ export default function FileSubmissionCard({ submission, onDelete }: FileSubmiss
   }
 
   const handleDownload = () => {
-    const fileUrl = process.env.NEXT_PUBLIC_API_BASE_URL + submission.text;
-    // console.log(fileUrl);
-    
-    window.open(fileUrl, "_blank");
-  }
+    const fileName = submission.text.split("/").pop();
+    const fileUrl = process.env.NEXT_PUBLIC_API_BASE_URL + "/api/download/" + fileName;
+    const link = document.createElement("a");
+    link.href = fileUrl;
+    link.setAttribute("download", fileName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div className="flex items-start gap-4 p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors group">
