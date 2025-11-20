@@ -100,6 +100,7 @@ export default function Home() {
         const response = await fetch(`${apiBase}${endpoint}`, {
           method: "POST",
           body: formData,
+          cache: "no-store",
         })
         const data = await response.json()
         // setMessages((prev) => [data, ...prev])
