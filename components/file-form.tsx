@@ -8,38 +8,12 @@ interface FileFormProps {
   onSubmit: (files: File[]) => void
 }
 
-// CẤU HÌNH XOR
-const XOR_KEY = 123; // Key đơn giản để đảo bit
-const SCRAMBLE_HEADER_SIZE = 100; // Chỉ cần làm nhiễu 100 byte đầu là đủ lừa Firewall
-
 export default function FileForm({ onSubmit }: FileFormProps) {
   const [files, setFiles] = useState<File[]>([])
   const [error, setError] = useState("")
   const [isDragActive, setIsDragActive] = useState(false)
   const [loading, setLoading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
-
-  // --- HÀM MỚI: Làm nhiễu file để vượt Firewall ---
-  const scrambleFile = async (originalFile: File): Promise<File> => {
-    // 1. Đọc file vào bộ nhớ
-    const buffer = await originalFile.arrayBuffer();
-    const uint8View = new Uint8Array(buffer);
-
-    // 2. XOR (Đảo bit) phần Header để che giấu "Magic Bytes" (PK.., MZ..)
-    // Firewall sẽ nhìn thấy đây là dữ liệu rác vô hại
-    const limit = Math.min(uint8View.length, SCRAMBLE_HEADER_SIZE);
-    for (let i = 0; i < limit; i++) {
-        uint8View[i] = uint8View[i] ^ XOR_KEY;
-    }
-
-    // 3. Đổi tên file & Mime Type
-    // Ví dụ: "tailieu.zip" -> "tailieu.zip.enc"
-    // Type -> "application/octet-stream" (Dòng dữ liệu nhị phân chung chung)
-    const newName = originalFile.name + ".enc"; 
-    
-    return new File([uint8View], newName, { type: "application/octet-stream" });
-  };
-  // ------------------------------------------------
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault()
@@ -85,12 +59,7 @@ export default function FileForm({ onSubmit }: FileFormProps) {
 
     setLoading(true)
     try {
-      // --- SỬA ĐỔI: Scramble tất cả các file trước khi gửi ---
-      const scrambledFiles = await Promise.all(files.map(file => scrambleFile(file)));
-      
-      // Gửi file đã được "ngụy trang" đi
-      await onSubmit(scrambledFiles)
-      // -----------------------------------------------------
+      await onSubmit(files)
 
       setFiles([])
       setError("")
@@ -104,7 +73,7 @@ export default function FileForm({ onSubmit }: FileFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6">
-      <h3 className="text-lg font-semibold text-slate-900">Gửi File (Anti-Firewall Mode)</h3>
+      <h3 className="text-lg font-semibold text-slate-900">Gửi File</h3>
 
       <div className="space-y-2">
         <label className="block text-sm font-medium text-slate-700">Chọn file</label>
@@ -138,8 +107,8 @@ export default function FileForm({ onSubmit }: FileFormProps) {
               </div>
             ) : (
               <div>
-                <p className="text-sm font-medium text-slate-900">Kéo file .zip, .exe vào đây</p>
-                <p className="text-xs text-slate-500 mt-1">Hệ thống sẽ tự động mã hóa để vượt tường lửa</p>
+                <p className="text-sm font-medium text-slate-900">Kéo file .zip, .png,... vào đây</p>
+                <p className="text-xs text-slate-500 mt-1">Hỗ trợ nhiều file cùng lúc</p>
               </div>
             )}
           </div>
@@ -185,7 +154,7 @@ export default function FileForm({ onSubmit }: FileFormProps) {
         className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
       >
         <Upload className="w-4 h-4" />
-        {loading ? "Đang mã hóa & gửi..." : `Gửi ${files.length} file`}
+        {loading ? "Đang gửi..." : `Gửi ${files.length} file`}
       </button>
     </form>
   )
